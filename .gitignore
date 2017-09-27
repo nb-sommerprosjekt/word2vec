@@ -1,0 +1,10 @@
+*corpus_separated_deweys
+*doc2vec_dir
+*meta
+*.pckl
+*.sav
+*.bin
+*.npy
+*.txt
+*.idea
+*__pycache__
