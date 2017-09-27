@@ -1,7 +1,7 @@
 import gensim
 
 # https://medium.com/@klintcho/doc2vec-tutorial-using-gensim-ab3ac03d3a1
-# Dette scriptet fungerer ikke slik det er per nå. 
+# Dette scriptet fungerer ikke slik det er per nå.
 def get_articles(original_name):
     articles=open(original_name+'.txt',"r")
     articles=articles.readlines()

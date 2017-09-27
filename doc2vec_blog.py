@@ -55,13 +55,13 @@ if __name__ == '__main__':
         text = text_file.read().replace('\n','')
     #print(text)
 
-    dewey_train, text_train = get_articles("training_meta100_filtered")
+    dewey_train, text_train = get_articles("training_min100")
     w2v_train = []
     for text in text_train:
         w2v_train.append(make_word2vecs_from_doc(text))
     print("Treningssett gjort om til word2vec")
 
-    dewey_train , text_test = get_articles("test_meta100_filtered")
+    dewey_train , text_test = get_articles("test_min100")
     w2v_test = []
     for text in text_train:
         w2v_test.append(make_word2vecs_from_doc(text))
@@ -73,13 +73,13 @@ if __name__ == '__main__':
     model_pipe = Pipeline([("word2vec vectorizer", MeanEmbeddingVectorizer(w2v_train)),
                           ("extra trees", ExtraTreesClassifier(n_estimators=200))])
     print("modellen er produsert")
-    model_pipe.fit(text_train[:1],dewey_train[:1])
-
+    model_pipe.fit(text_train[:100],dewey_train[:100])
+    print("Modellen er trent. Predikering pågår.")
     print(text_test[10])
     print(sorted(set(dewey_train[:100])))
     filename = 'finalized_model.sav'
     print(model_pipe.predict([text_test[10]]))
     print(model_pipe.predict_proba([text_test[10]]))
-    joblib.dump(model_pipe, "Modell.pckl")
+    #joblib.dump(model_pipe, "Modell.pckl")
     #model_pipe.predict_proba(["Genetikk"])
     #print(len(word2vecDoc))
