@@ -38,15 +38,15 @@ def find_similar_docs (text, model):
 if __name__ == '__main__':
     deweys, docs = get_articles("full_text_non_stemmed")
     print(deweys)
-    # it = DocIterator(docs, deweys)
-    #
-    # model = gensim.models.Doc2Vec(size = 300, window = 10, min_count = 5, workers = 11, alpha = 0.025, min_alpha = 0.025)
-    # model.build_vocab(it,)
-    #
-    # model.alpha -=0.002
-    # model.min_alpha = model.alpha
-    # model.train(it, total_examples= model.corpus_count, epochs = 10)
-    # model.save("doc2vec.model")
+    it = DocIterator(docs, deweys)
+
+    model = gensim.models.Doc2Vec(size = 300, window = 10, min_count = 5, workers = 11, alpha = 0.025, min_alpha = 0.025)
+    model.build_vocab(it,)
+
+    model.alpha -=0.002
+    model.min_alpha = model.alpha
+    model.train(it, total_examples= model.corpus_count, epochs = 100)
+    model.save("doc2vec_dir/100epoch/doc2vec_100.model")
 
     # model = gensim.models.Doc2Vec.load("doc2vec_dir/doc2vec.model")
     # with open("test.txt","r") as text_file:
