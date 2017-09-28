@@ -5,7 +5,10 @@ from sklearn.pipeline import Pipeline
 from sklearn.ensemble import ExtraTreesClassifier
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.svm import SVC
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.naive_bayes import MultinomialNB, BernoulliNB
 from collections import defaultdict
+from sklearn.metrics import accuracy_score
 
 class MeanEmbeddingVectorizer(object):
     def __init__(self, word2vec):
@@ -79,25 +82,26 @@ def get_articles(original_name):
 
     return dewey_array, docs
 
+def print_results(testName,res_vector,dewey_test):
+
+    return "Results "+testName+": "+str(accuracy_score(dewey_test,res_vector))
+
 
 if __name__ == '__main__':
     w2v_model = gensim.models.Doc2Vec.load("doc2vec_dir/100epoch/doc2vec_100.model")
     print("Model initialisert")
-    with open("test.txt","r") as text_file:
-        text = text_file.read().replace('\n','')
-    #print(text)
 
     dewey_train, text_train = get_articles("training_min100")
-    w2v_train = []
-    for text in text_train:
-        w2v_train.append(make_word2vecs_from_doc(text))
-    print("Treningssett gjort om til word2vec")
+    # w2v_train = []
+    # for text in text_train:
+    #     w2v_train.append(make_word2vecs_from_doc(text))
+    # print("Treningssett gjort om til word2vec")
 
     dewey_test , text_test = get_articles("test_min100")
-    w2v_test = []
-    for text in text_test:
-        w2v_test.append(make_word2vecs_from_doc(text))
-    print("test-sett gjort om til word2vec")
+    # w2v_test = []
+    # for text in text_test:
+    #     w2v_test.append(make_word2vecs_from_doc(text))
+    # print("test-sett gjort om til word2vec")
 
 
     # ### TEST 1 Etrees
@@ -137,29 +141,48 @@ if __name__ == '__main__':
     # print ("Results SVC: "+str(SVC_riktig/len(dewey_test)))
     #
 
-    ## TEST 3 SVM uten embeddings
-    vectorizer = TfidfVectorizer(
-        preprocessor=lambda x: list(map(str, x)),
-        tokenizer=lambda x: x,
-        ngram_range=(1, 3))
-    SVM_model_pipe = Pipeline([('vectorizer', vectorizer), ('model', SVC())])
-    SVM_model_pipe.fit(text_train,dewey_train)
+    ## TEST 3 SVM med TFIDF, uten embeddings
 
-    SVM_results = []
+    SVM_tfidf= Pipeline([('tfidf_vectorizer', TfidfVectorizer(analyzer= lambda x: x)), ('linear_svc', SVC(kernel ="linear"))])
+    SVM_tfidf.fit(text_train,dewey_train)
+    SVM_tfidfresults = []
+    print("Test 3 SVM w/tfidf - Done ")
+    #Test 4 Multinomial Naive Bayes
+    mult_nb = Pipeline([("count_vectorizer", CountVectorizer(analyzer=lambda x: x)), ("multinomial nb", MultinomialNB())])
+    mult_nb.fit(text_train,dewey_train)
+    mult_nb_res = []
+    print("Test 4 Multinomial Naive Bayes - Done")
+    # Test 5 Bernoulli nb med count vectorizer
+    bern_nb = Pipeline([("count_vectorizer", CountVectorizer(analyzer=lambda x: x)), ("bernoulli nb", BernoulliNB())])
+    bern_nb.fit(text_train, dewey_train)
+    bern_nb_res = []
+    print("Test 5  Bernoulli nb med count vectorizer - Done")
+    # Test 5 multinomial bayes med tfidf
+    mult_nb_tfidf = Pipeline([("tfidf_vectorizer", TfidfVectorizer(analyzer=lambda x: x)), ("multinomial nb", MultinomialNB())])
+    mult_nb_tfidf.fit(text_train,dewey_train)
+    mult_nb_tfidf_res = []
+    print("Test 5 multinomial bayes med tfidf - Done")
+    # Test 6 bernoulli naive bayes med tfidf
+    bern_nb_tfidf = Pipeline([("tfidf_vectorizer", TfidfVectorizer(analyzer=lambda x: x)), ("bernoulli nb", BernoulliNB())])
+    bern_nb_tfidf.fit(text_train,dewey_train)
+    bern_nb_tfidf_res = []
+    print("Test 6 bernoulli naive bayes med tfidf - Done")
+
+
+
     for article in text_test:
-        SVM_results.append(SVM_model_pipe.predict([article]))
+        SVM_tfidfresults.append(SVM_tfidf.predict([article]))
+        mult_nb_res.append(mult_nb.predict([article]))
+        bern_nb_res.append(bern_nb.predict([article]))
+        mult_nb_tfidf_res.append(mult_nb_tfidf.predict([article]))
+        bern_nb_tfidf_res.append(bern_nb_tfidf.predict([article]))
 
-    SVM_riktig = 0
-    k = 0
-    for res in SVM_results:
-        if res == dewey_test[k]:
-            SVM_riktig = SVM_riktig +1
-        k = k +1
-    print ("Results SVM: "+str(SVM_riktig/len(dewey_test)))
-
-
-
-
+    print(print_results("SVM_tfidf_test", SVM_tfidfresults, dewey_test))
+    print(print_results("Multinomial naive bayes", mult_nb_res, dewey_test))
+    print(print_results("Bernoulli Naive Bayes", bern_nb_res, dewey_test))
+    print(print_results("Multinomial naive bayes", mult_nb_res, dewey_test))
+    print(print_results("Multinomial naive bayes w/tfidf", mult_nb_tfidf_res, dewey_test))
+    print(print_results("Bernoulli Naive Bayes w/tfidf", mult_nb_res, dewey_test))
     # print(model_pipe.predict([text_test[10]]))
     # print(model_pipe.predict_proba([text_test[10]]))
 
