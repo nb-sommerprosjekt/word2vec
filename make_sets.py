@@ -52,4 +52,4 @@ def create_test_and_training_set(original_name, test_name,training_name,test_per
     f = open(test_name + ".txt", "w")
     f.write(test)
 
-create_test_and_training_set("full_text_non_stemmed", "test_min100","training_min100",0.20,100)
+create_test_and_training_set("full_text_non_stemmed", "test_min500","training_min500",0.20,500)

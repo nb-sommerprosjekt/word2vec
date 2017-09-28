@@ -91,55 +91,36 @@ if __name__ == '__main__':
     w2v_model = gensim.models.Doc2Vec.load("doc2vec_dir/100epoch/doc2vec_100.model")
     print("Model initialisert")
 
-    dewey_train, text_train = get_articles("training_min100")
-    # w2v_train = []
-    # for text in text_train:
-    #     w2v_train.append(make_word2vecs_from_doc(text))
-    # print("Treningssett gjort om til word2vec")
+    dewey_train, text_train = get_articles("training_min500")
 
-    dewey_test , text_test = get_articles("test_min100")
-    # w2v_test = []
-    # for text in text_test:
-    #     w2v_test.append(make_word2vecs_from_doc(text))
-    # print("test-sett gjort om til word2vec")
+    dewey_test , text_test = get_articles("test_min500")
+
+    ### Test 0 Etrees
+    etree_model_pipe = Pipeline([("word2vec vectorizer", MeanEmbeddingVectorizer(w2v_model)),
+                          ("extra trees", ExtraTreesClassifier(n_estimators=400))])
+    print("Etree-modellen er produsert")
+    etree_model_pipe.fit(text_train,dewey_train)
+    print("E-tree Modellen er trent. Predikering pågår.")
+    i = 0
+    etree_results = []
+    ### TEST 1 Etrees med tfidf
+    etree_tfidf_model_pipe = Pipeline([("word2vec vectorizer", TfidfEmbeddingVectorizer(w2v_model)),
+                          ("extra trees", ExtraTreesClassifier(n_estimators=400))])
+    print("Etree-modellen er produsert")
+    etree_tfidf_model_pipe.fit(text_train,dewey_train)
+    print("E-tree Modellen er trent. Predikering pågår.")
+    i = 0
+    etree_tfidf_results = []
 
 
-    # ### TEST 1 Etrees
-    # etree_model_pipe = Pipeline([("word2vec vectorizer", TfidfEmbeddingVectorizer(w2v_model)),
-    #                       ("extra trees", ExtraTreesClassifier(n_estimators=400))])
-    # print("Etree-modellen er produsert")
-    # etree_model_pipe.fit(text_train,dewey_train)
-    # print("E-tree Modellen er trent. Predikering pågår.")
-    # i = 0
-    # etree_results = []
-    # for article in text_test:
-    #     etree_results.append(etree_model_pipe.predict([article]))
-    # i = 0
-    # riktig = 0
-    # for result in etree_results:
-    #     if result == dewey_test[i]:
-    #         riktig = riktig +1
-    #     i = i +1
-    # print ("Results Etree: "+str(riktig/len(dewey_test)))
-    #
-    # ## TEST 2 SVC + embeddings
-    # SVC_model_pipe = Pipeline([("word2vec vectorizer", MeanEmbeddingVectorizer(w2v_model)),
-    #                       ("SVM", SVC())])
-    # print("Etree-modellen er produsert")
-    # SVC_model_pipe.fit(text_train,dewey_train)
-    # print("SVC modellen er trent. Predikering pågår.")
-    # SVC_results = []
-    # for article in text_test:
-    #     SVC_results.append(SVC_model_pipe.predict([article]))
-    #
-    # SVC_riktig = 0
-    # j = 0
-    # for res in SVC_results:
-    #     if res == dewey_test[j]:
-    #         SVC_riktig = SVC_riktig +1
-    #     j = j +1
-    # print ("Results SVC: "+str(SVC_riktig/len(dewey_test)))
-    #
+    # TEST 2 SVC + embeddings
+    SVC_model_pipe = Pipeline([("word2vec vectorizer", MeanEmbeddingVectorizer(w2v_model)),
+                          ("SVM", SVC())])
+    print("Etree-modellen er produsert")
+    SVC_model_pipe.fit(text_train,dewey_train)
+    print("SVC modellen er trent. Predikering pågår.")
+    SVC_results = []
+
 
     ## TEST 3 SVM med TFIDF, uten embeddings
 
@@ -171,20 +152,25 @@ if __name__ == '__main__':
 
 
     for article in text_test:
+        etree_results.append(etree_model_pipe.predict([article]))
+        etree_tfidf_results.append(etree_tfidf_model_pipe.predict([article]))
+        SVC_results.append(SVC_model_pipe.predict([article]))
         SVM_tfidfresults.append(SVM_tfidf.predict([article]))
         mult_nb_res.append(mult_nb.predict([article]))
         bern_nb_res.append(bern_nb.predict([article]))
         mult_nb_tfidf_res.append(mult_nb_tfidf.predict([article]))
         bern_nb_tfidf_res.append(bern_nb_tfidf.predict([article]))
 
+    print(print_results("Etree-embedding", etree_results, dewey_test))
+    print(print_results("Etree-embedding w/tfidf",etree_tfidf_results,dewey_test))
+    print(print_results("SVC_embedding",SVC_results,dewey_test))
     print(print_results("SVM_tfidf_test", SVM_tfidfresults, dewey_test))
     print(print_results("Multinomial naive bayes", mult_nb_res, dewey_test))
     print(print_results("Bernoulli Naive Bayes", bern_nb_res, dewey_test))
     print(print_results("Multinomial naive bayes", mult_nb_res, dewey_test))
     print(print_results("Multinomial naive bayes w/tfidf", mult_nb_tfidf_res, dewey_test))
     print(print_results("Bernoulli Naive Bayes w/tfidf", mult_nb_res, dewey_test))
-    # print(model_pipe.predict([text_test[10]]))
-    # print(model_pipe.predict_proba([text_test[10]]))
+
 
 
     #joblib.dump(model_pipe, "modell.sav", compress = 1)
