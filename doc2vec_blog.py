@@ -100,42 +100,64 @@ if __name__ == '__main__':
     print("test-sett gjort om til word2vec")
 
 
+    # ### TEST 1 Etrees
+    # etree_model_pipe = Pipeline([("word2vec vectorizer", TfidfEmbeddingVectorizer(w2v_model)),
+    #                       ("extra trees", ExtraTreesClassifier(n_estimators=400))])
+    # print("Etree-modellen er produsert")
+    # etree_model_pipe.fit(text_train,dewey_train)
+    # print("E-tree Modellen er trent. Predikering pågår.")
+    # i = 0
+    # etree_results = []
+    # for article in text_test:
+    #     etree_results.append(etree_model_pipe.predict([article]))
+    # i = 0
+    # riktig = 0
+    # for result in etree_results:
+    #     if result == dewey_test[i]:
+    #         riktig = riktig +1
+    #     i = i +1
+    # print ("Results Etree: "+str(riktig/len(dewey_test)))
+    #
+    # ## TEST 2 SVC + embeddings
+    # SVC_model_pipe = Pipeline([("word2vec vectorizer", MeanEmbeddingVectorizer(w2v_model)),
+    #                       ("SVM", SVC())])
+    # print("Etree-modellen er produsert")
+    # SVC_model_pipe.fit(text_train,dewey_train)
+    # print("SVC modellen er trent. Predikering pågår.")
+    # SVC_results = []
+    # for article in text_test:
+    #     SVC_results.append(SVC_model_pipe.predict([article]))
+    #
+    # SVC_riktig = 0
+    # j = 0
+    # for res in SVC_results:
+    #     if res == dewey_test[j]:
+    #         SVC_riktig = SVC_riktig +1
+    #     j = j +1
+    # print ("Results SVC: "+str(SVC_riktig/len(dewey_test)))
+    #
 
-    #w2v = make_word2vecs_from_doc(text)
-    etree_model_pipe = Pipeline([("word2vec vectorizer", TfidfEmbeddingVectorizer(w2v_model)),
-                          ("extra trees", ExtraTreesClassifier(n_estimators=1000))])
+    ## TEST 3 SVM uten embeddings
+    vectorizer = TfidfVectorizer(
+        preprocessor=lambda x: list(map(str, x)),
+        tokenizer=lambda x: x,
+        ngram_range=(1, 3))
+    SVM_model_pipe = Pipeline([('vectorizer', vectorizer), ('model', SVC())])
+    SVM_model_pipe.fit(text_train,dewey_train)
 
-    SVC_model_pipe = Pipeline([("word2vec vectorizer", TfidfEmbeddingVectorizer(w2v_model)),
-                          ("SVM", SVC())])
-    print("modellen er produsert")
-    etree_model_pipe.fit(text_train,dewey_train)
-    SVC_model_pipe.fit(text_train,dewey_train)
-    print("Modellen er trent. Predikering pågår.")
-    print(text_test[10])
-    print(sorted(set(dewey_train[:100])))
-    etree_results = []
-    SVC_results = []
-    i = 0
+    SVM_results = []
     for article in text_test:
-        etree_results.append(etree_model_pipe.predict([article]))
-        SVC_results.append(SVC_model_pipe.predict([article]))
-    i = 0
-    riktig = 0
-    for result in etree_results:
-        if result == dewey_test[i]:
-            riktig = riktig +1
-        i = i +1
-    SVC_riktig = 0
-    j = 0
-    for res in SVC_results:
-        if res == dewey_test[i]:
-            SVC_riktig = SVC_riktig +1
-        j = j +1
-    print(len(etree_results))
-    print(len(dewey_test))
-    print(riktig)
-    print ("Results Etree: "+str(riktig/len(dewey_test)))
-    print ("Results SVC: "+str(SVC_riktig/len(dewey_test)))
+        SVM_results.append(SVM_model_pipe.predict([article]))
+
+    SVM_riktig = 0
+    k = 0
+    for res in SVM_results:
+        if res == dewey_test[k]:
+            SVM_riktig = SVM_riktig +1
+        k = k +1
+    print ("Results SVM: "+str(SVM_riktig/len(dewey_test)))
+
+
 
 
     # print(model_pipe.predict([text_test[10]]))
