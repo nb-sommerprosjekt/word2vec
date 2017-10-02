@@ -161,39 +161,27 @@ if __name__ == '__main__':
         bern_nb_res.append(bern_nb.predict([article]))
         mult_nb_tfidf_res.append(mult_nb_tfidf.predict([article]))
         bern_nb_tfidf_res.append(bern_nb_tfidf.predict([article]))
+    #
+    # res_dict={
+    #     'etree' : accuracy_score(dewey_test,etree_results),
+    #     'etree_tfidf' : accuracy_score(dewey_test,etree_tfidf_results),
+    #     'SVC_embedding': accuracy_score(dewey_test,SVC_results),
+    #     'SVM tfid' : accuracy_score(dewey_test,SVM_tfidfresults),
+    #     'mult_nb' : accuracy_score(dewey_test,mult_nb_res),
+    #     'bern_nb' : accuracy_score(dewey_test,bern_nb_res),
+    #     'mult_nb_tfidf' : accuracy_score(dewey_test,mult_nb_tfidf_res),
+    #     'bern_nb_tfidf' : accuracy_score(dewey_test,bern_nb_tfidf_res)
+    # }
 
-    res_dict={
-        'etree' : accuracy_score(dewey_test,etree_results),
-        'etree_tfidf' : accuracy_score(dewey_test,etree_tfidf_results),
-        'SVC': accuracy_score(dewey_test,SVC_results),
-        'SVM tfid' : accuracy_score(dewey_test,SVM_tfidfresults),
-        'mult_nb' : accuracy_score(dewey_test,mult_nb_res),
-        'bern_nb' : accuracy_score(dewey_test,bern_nb_res),
-        'mult_nb_tfidf' : accuracy_score(dewey_test,mult_nb_tfidf_res),
-        'bern_nb_tfidf' : accuracy_score(dewey_test,bern_nb_tfidf_res)
-
-    }
-    x_axis = []
-    y_axis = []
-    for keys,values in res_dict.items():
-        print(keys+":"+str(values))
-        x_axis.append(keys)
-        y_axis.append(values)
-    plt.bar(range(len(x_axis)), x_axis, align = 'center')
-    plt.xticks(range(len(x_axis)),y_axis, size='small')
-    plt.show()
     # plt.bar(list(res_dict.keys()),list(res_dict.values()),width = 1.0, color ='g')
     # plt.show()
-    # print(print_results("Etree-embedding", etree_results, dewey_test))
-    # print(print_results("Etree-embedding w/tfidf",etree_tfidf_results,dewey_test))
-    # print(print_results("SVC_embedding",SVC_results,dewey_test))
-    # print(print_results("SVM_tfidf_test", SVM_tfidfresults, dewey_test))
-    # print(print_results("Multinomial naive bayes", mult_nb_res, dewey_test))
-    # print(print_results("Bernoulli Naive Bayes", bern_nb_res, dewey_test))
-    # print(print_results("Multinomial naive bayes", mult_nb_res, dewey_test))
-    # print(print_results("Multinomial naive bayes w/tfidf", mult_nb_tfidf_res, dewey_test))
-    # print(print_results("Bernoulli Naive Bayes w/tfidf", mult_nb_res, dewey_test))
+    print(print_results("Etree-embedding", etree_results, dewey_test))
+    print(print_results("Etree-embedding w/tfidf",etree_tfidf_results,dewey_test))
+    print(print_results("SVC_embedding",SVC_results,dewey_test))
+    print(print_results("SVM_tfidf_test", SVM_tfidfresults, dewey_test))
+    print(print_results("Multinomial naive bayes", mult_nb_res, dewey_test))
+    print(print_results("Bernoulli Naive Bayes", bern_nb_res, dewey_test))
+    print(print_results("Multinomial naive bayes w/tfidf", mult_nb_tfidf_res, dewey_test))
+    print(print_results("Bernoulli Naive Bayes w/tfidf", bern_nb_tfidf_res, dewey_test))
 
 
-
-    #joblib.dump(model_pipe, "modell.sav", compress = 1)
