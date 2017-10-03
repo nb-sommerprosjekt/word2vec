@@ -1,11 +1,15 @@
+### DENNE KODEN VIRKER IKKE HELT ENDA. SKAL FIKSES ETTERHVERT. INSPIRERT av MLP fra http://nadbordrozd.github.io/blog/2017/08/12/looking-for-the-text-top-model/
+
+
+
 from keras.preprocessing.text import Tokenizer, one_hot
 from keras.preprocessing.sequence import pad_sequences
 from keras.utils import to_categorical
-from keras.layers import Input, Conv1D, MaxPooling1D, Flatten, Dense
+from keras.layers import Input, Conv1D, MaxPooling1D, Flatten, Dense, Dropout, Activation
 import numpy as np
 import gensim
 from keras.layers import Embedding
-from keras.models import Model
+from keras.models import Model, Sequential
 import pydot
 import graphviz
 def get_articles(original_name):
@@ -52,6 +56,7 @@ num_classes = len(set(dewey_train))
 tokenizer = Tokenizer(num_words= vocab_size)
 tokenizer.fit_on_texts(text_train)
 sequences = tokenizer.texts_to_sequences(text_train)
+sequences = tokenizer.sequences_to_matrix(sequences, mode = 'binary')
 
 word_index = tokenizer.word_index
 print('Found %s unique tokens.' % len(word_index))
@@ -77,56 +82,30 @@ y_train = labels[:-nb_validation_samples]
 x_val = data[-nb_validation_samples:]
 y_val = labels[-nb_validation_samples:]
 
+model = Sequential()
+model.add(Dense(128, input_shape=(vocab_size,)))
+model.add(Activation('relu'))
+model.add(Dropout(0.2))
+model.add(Dense(128, input_shape=(vocab_size,)))
+model.add(Activation('relu'))
+model.add(Dropout(0.2))
+model.add(Dense(num_classes))
+model.add(Activation('softmax'))
 
+#preds = Dense(len(labels_index), activation='softmax')(x)
 
-w2v_model = gensim.models.Doc2Vec.load("doc2vec_dir/100epoch/doc2vec_100.model")
-
-
-embedding_matrix = np.zeros((len(word_index) + 1, EMBEDDING_DIM))
-j=0
-k=0
-for word, i in word_index.items():
-    #embedding_vector = w2v_model[word]
-    k = k+1
-    try:
-        if w2v_model[word] is not None:
-        # words not found in embedding index will be all-zeros.
-
-            embedding_matrix[i] = w2v_model[word]
-    except KeyError:
-        j=j+1
-        continue
-
-sequence_input = Input(shape = (MAX_SEQUENCE_LENGTH,), dtype = 'int32')
-embedding_layer = Embedding(len(word_index) + 1,
-                            EMBEDDING_DIM,
-                            weights=[embedding_matrix],
-                            input_length=MAX_SEQUENCE_LENGTH,
-                            trainable=False)
-embedded_sequences = embedding_layer(sequence_input)
-x = Conv1D(128, 5, activation = 'relu')(embedded_sequences)
-x = MaxPooling1D(5)(x)
-x = Conv1D(128, 5, activation = 'relu')(x)
-x = MaxPooling1D(5)(x)
-x = Conv1D(128,5, activation = 'relu')(x)
-x = MaxPooling1D(35)(x)
-x = Flatten()(x)
-x = Dense(128, activation = 'relu')(x)
-
-preds = Dense(len(labels_index), activation='softmax')(x)
-
-model = Model(sequence_input, preds)
 model.compile(loss='categorical_crossentropy',
-              optimizer='rmsprop',
-              metrics=['acc'])
+              optimizer='adam',
+              metrics=['accuracy'])
+
 
 model.fit(x_train, y_train,
           batch_size=64,
-          epochs=20,
-validation_data=(x_val, y_val)
+          epochs=20
           )
+
+score = model.evaluate(x_val, y_val, batch_size= 64)
+print(score)
 from keras.utils.vis_utils import plot_model
 plot_model(model, to_file = 'model.png')
-model.save("keras_deep_20epochs_100.bin")
-# Y_preds = model.predict(dewey_test)
-# print(y_preds)
+model.save("keras_deep_20epochs_MLP100.bin")

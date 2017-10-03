@@ -8,3 +8,4 @@
 *.txt
 *.idea
 *__pycache__
+*logs
