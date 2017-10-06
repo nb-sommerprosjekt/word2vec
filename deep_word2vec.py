@@ -23,8 +23,9 @@ def get_articles(original_name):
 
     return dewey_array, docs
 
+dewey_train, text_train = get_articles("full_text_non_stemmed")
+#dewey_train, text_train = get_articles("full_training1000words_min100")
 
-dewey_train, text_train = get_articles("full_training1000words_min100")
 #dewey_test, text_test = get_articles("test_1000words_min100")
 # print(len(dewey_test))
 # print(len(dewey_train))
@@ -47,7 +48,7 @@ print(len(labels))
 #dewey_train = [int(i) for i in dewey_train ]
 ## Preprocessing
 vocab_size = 20000
-MAX_SEQUENCE_LENGTH = 1000
+MAX_SEQUENCE_LENGTH = 5000
 num_classes = len(set(dewey_train))
 tokenizer = Tokenizer(num_words= vocab_size)
 tokenizer.fit_on_texts(text_train)
@@ -70,7 +71,7 @@ np.random.shuffle(indices)
 data = data[indices]
 labels = labels[indices]
 print(labels.shape)
-nb_validation_samples = int(0.1 * data.shape[0])
+nb_validation_samples = int(VALIDATION_SPLIT * data.shape[0])
 
 x_train = data[:-nb_validation_samples]
 y_train = labels[:-nb_validation_samples]
