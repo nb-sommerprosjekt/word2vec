@@ -89,13 +89,16 @@ def print_results(testName,res_vector,dewey_test):
 
 
 if __name__ == '__main__':
-    w2v_model = gensim.models.Doc2Vec.load("doc2vec_dir/100epoch/doc2vec_100.model")
+#    w2v_model = gensim.models.Doc2Vec.load("doc2vec_dir/100epoch/doc2vec_100.model")
+    w2v_model = gensim.models.Doc2Vec.load("doc2vec_dir/doc2vec_w_wiki_30epoch/doc2vec_w_wiki_30epochs")
     print("Model initialisert")
 
-    dewey_train, text_train = get_articles("training_min500")
+    #dewey_train, text_train = get_articles("training_min500")
+    #dewey_test , text_test = get_articles("test_min500")
 
-    dewey_test , text_test = get_articles("test_min500")
 
+    dewey_train, text_train = get_articles("corpus_w_wiki/Datasett_100_w_wiki/train_w_wiki100")
+    dewey_test , text_test = get_articles("corpus_w_wiki/Datasett_100_w_wiki/test_min100")
     ### Test 0 Etrees
     etree_model_pipe = Pipeline([("word2vec vectorizer", MeanEmbeddingVectorizer(w2v_model)),
                           ("extra trees", ExtraTreesClassifier(n_estimators=400))])

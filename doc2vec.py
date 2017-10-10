@@ -36,7 +36,7 @@ def find_similar_docs (text, model):
     return model.most_similar(text)
 
 if __name__ == '__main__':
-    deweys, docs = get_articles("full_text_non_stemmed")
+    deweys, docs = get_articles("corpus_w_wiki/combined3deweys")
     print(deweys)
     it = DocIterator(docs, deweys)
 
@@ -45,8 +45,8 @@ if __name__ == '__main__':
 
     model.alpha -=0.002
     model.min_alpha = model.alpha
-    model.train(it, total_examples= model.corpus_count, epochs = 100)
-    model.save("doc2vec_dir/100epoch/doc2vec_100.model")
+    model.train(it, total_examples= model.corpus_count, epochs = 30)
+    model.save("doc2vec_dir/100epoch/doc2vec_w_wiki_30epochs")
 
     # model = gensim.models.Doc2Vec.load("doc2vec_dir/doc2vec.model")
     # with open("test.txt","r") as text_file:

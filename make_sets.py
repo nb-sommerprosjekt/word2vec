@@ -38,12 +38,12 @@ def create_test_and_training_set(original_name, test_name,training_name,test_per
     shuffle(training_set)
     print("antall deweys 100: " +str(antall_dewey_stor_nok))
     print(dewey_freq)
-    dewey_list = sorted(dewey_freq.items())
-    deweys,freq = zip(*dewey_list)
-    newlist_dewey = [int(i) for i in deweys]
-    plt.plot(newlist_dewey,freq)
-    #plt.bar(newlist,dewey_freq.values(), width = 1.0, color='g')
-    plt.show()
+    # dewey_list = sorted(dewey_freq.items())
+    # deweys,freq = zip(*dewey_list)
+    # newlist_dewey = [int(i) for i in deweys]
+    # plt.plot(newlist_dewey,freq)
+    # #plt.bar(newlist,dewey_freq.values(), width = 1.0, color='g')
+    # plt.show()
     shuffle(test_set)
     training="".join(training_set)
     test= "".join(test_set)
@@ -52,4 +52,4 @@ def create_test_and_training_set(original_name, test_name,training_name,test_per
     f = open(test_name + ".txt", "w")
     f.write(test)
 
-create_test_and_training_set("1000_word_corpus", "full_test_corpus1000_min100","tull",0.0000000001,100)
+create_test_and_training_set("corpus_w_wiki/only_wiki", "corpus_w_wiki/only_wiki100_test","corpus_w_wiki/only_wiki100_train",0.2,100)
