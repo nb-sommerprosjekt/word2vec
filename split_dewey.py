@@ -76,4 +76,5 @@ def split_text_by_dewey(text):
          dewey_text_file.write(text)
     dewey_text_file.close()
 
-create_test_and_training_set("training_meta2_filtered", "test_meta2_filtered","training_meta2_filtered",0.20,2)
+#create_test_and_training_set("training_meta2_filtered", "test_meta2_filtered","training_meta2_filtered",0.20,2)
+split_text_by_dewey()

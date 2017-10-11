@@ -38,7 +38,7 @@ def make_word2vec_models_for_dewey():
         print("Ferdig!!!")
 
 def make_full_model():
-    with open("full_text_non_stemmed.txt") as f:
+    with open("corpus_w_wiki/combined3deweys.txt") as f:
             vocab_sentences = f.readlines()
     vocab_sentences_tokenized =  []
     for sent in vocab_sentences:
@@ -47,7 +47,7 @@ def make_full_model():
     model = gensim.models.Word2Vec(iter=1)
     model.build_vocab(vocab_sentences_tokenized)
     model.train(vocab_sentences_tokenized, total_examples= model.corpus_count, epochs= 30)
-    model.save("full.bin")
+    model.save("corpus_w_wiki/word2vec/full.bin")
     print("Ferdig!!!")
 def make_list_of_similar_words(deweynr,model_path):
     with open("klassebetegnelser_dict.pckl","rb") as f:
@@ -81,7 +81,7 @@ def make_list_of_similar_words(deweynr,model_path):
     meta_dewey.close()
 
 if __name__ == '__main__':
-    #make_full_model()
+    make_full_model()
     #make_word2vec_models_for_dewey()
     # for file in os.listdir("corpus_separated_deweys/"):
     #     if file.endswith(".txt"):
