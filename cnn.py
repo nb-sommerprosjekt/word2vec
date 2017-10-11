@@ -168,16 +168,24 @@ def cnn(training_set, test_set, VOCAB_SIZE, MAX_SEQUENCE_LENGTH,EPOCHS, folder_t
 # print(y_preds)
 
 if __name__ == '__main__':
-    try:
-        cnn("corpus_w_wiki/data_set_100/combined100_training",
-            "corpus_w_wiki/data_set_100/100_test",
-            VOCAB_SIZE=1000,
-            MAX_SEQUENCE_LENGTH =1000,
-            EPOCHS=1,
-            folder_to_save_model="keras_models/",
-            loss_model= "categorical_crossentropy",
-            )
-    except TypeError:
-                print("Error logget")
-                pass
-    print("Prosessen fortsetter")
+    vocab_vector = [1000,3000,5000,8000, 10000, 20000, 30000, 50000, 300000]
+    sequence_length_vector = [1000, 2000, 3000, 4000, 5000]
+    epoch_vector = [10,20,30,40]
+
+    for vocab_test in vocab_vector:
+        for sequence_length_test in sequence_length_vector:
+            for epoch_test in epoch_vector:
+
+                try:
+                    cnn("corpus_w_wiki/data_set_100/combined100_training",
+                        "corpus_w_wiki/data_set_100/100_test",
+                        VOCAB_SIZE=vocab_test,
+                        MAX_SEQUENCE_LENGTH =sequence_length_test,
+                        EPOCHS=epoch_test,
+                        folder_to_save_model="keras_models/",
+                        loss_model= "categorical_crossentropy",
+                        )
+                except TypeError:
+                            print("Error logget")
+                            pass
+                print("Prosessen fortsetter")
