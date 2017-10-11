@@ -35,14 +35,9 @@ def cnn(training_set, test_set, VOCAB_SIZE, MAX_SEQUENCE_LENGTH,EPOCHS, folder_t
         labels_index[dewey] = label_id
     for dewey in dewey_train:
         labels.append(labels_index[dewey])
-    print(len(labels_index))
-    print(labels_index)
-    print(len(labels))
 
-    #dewey_train = [int(i) for i in dewey_train ]
     ## Preprocessing
     vocab_size = VOCAB_SIZE
-    #MAX_SEQUENCE_LENGTH = 1000
     num_classes = len(set(dewey_train))
 
     tokenizer = Tokenizer(num_words= vocab_size)
@@ -90,8 +85,6 @@ def cnn(training_set, test_set, VOCAB_SIZE, MAX_SEQUENCE_LENGTH,EPOCHS, folder_t
 
 
     w2v_model = gensim.models.Doc2Vec.load("doc2vec_dir/100epoch/doc2vec_100.model")
-
-
     embedding_matrix = np.zeros((len(word_index) + 1, EMBEDDING_DIM))
     j=0
     k=0
@@ -161,11 +154,9 @@ def cnn(training_set, test_set, VOCAB_SIZE, MAX_SEQUENCE_LENGTH,EPOCHS, folder_t
                       +"loss_model:" + str(loss_model) +'\n'+'\n'
                       )
     result_file.close()
-# from keras.utils.vis_utils import plot_model
-# plot_model(model, to_file = 'model.png')
+
     model.save(save_model_path)
-# Y_preds = model.predict(dewey_test)
-# print(y_preds)
+
 
 if __name__ == '__main__':
     vocab_vector = [1000,3000,5000,8000, 10000, 20000, 30000, 50000, 300000]
